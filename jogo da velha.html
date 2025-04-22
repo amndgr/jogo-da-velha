@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da velha top</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: rgb(238,174,202);
+            background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgb(255, 70, 196) 100%);;
+        }
+        #botao {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
+            font-size: medium; 
+            background-color: rgb(209, 6, 125); 
+            color: beige; 
+            border-radius: 5px; 
+            padding: 15px; 
+            width: 10%;
+        }
+        #placarx {
+            font-family: Georgia, 'Times New Roman', Times, serif; 
+            font-size: medium; 
+            color: antiquewhite;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        #placarO {
+            font-family: Georgia, 'Times New Roman', Times, serif; 
+            font-size: medium; 
+            color: antiquewhite;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        #placar {
+            
+            width:max-content;
+            height: 20px;
+
+        }
+        #status {
+            font-family: Georgia, 'Times New Roman', Times, serif; 
+            font-size: medium; 
+            color: antiquewhite;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        #table {
+            padding: 0%; 
+            border-bottom: 0cap;
+            border-left: 0cap;
+            border-top: 0cap;
+            border-right: 0cap;
+            
+        }
+        .cell {
+            border-color: rgb(209, 6, 125, 0.3); 
+            color: rgb(209, 6, 125, 0.8);
+            font-size: larger;
+            font-family: Arial, Helvetica, sans-serif;
+            text-shadow: 2px 2px 5x rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1 style="color: rgb(209, 6, 125); font-family: Georgia, 'Times New Roman', Times, serif; text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5);">
+            Jogo da velha
+        </h1>
+        <div id="placar">
+            <h3>
+                <span id="placarx">Jogador X: 0</span>&nbsp;&nbsp;&nbsp;  
+                <span id="placarO">Jogador O: 0</span>
+            </h3>
+        </div>
+        <br>
+
+        <div id="tabu">
+            <table id="table" border="1" width="400" height="400">
+                <tr>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(0)"></td>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(1)"></td>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(2)"></td>
+                </tr>
+                <tr>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(3)"></td>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(4)"></td>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(5)"></td>
+                </tr>
+                <tr>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(6)"></td>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(7)"></td>
+                    <td class="cell" width="33%" height="33%" align="center" onclick="marcador(8)"></td>
+                </tr>
+            </table>
+        </div>
+
+        <br>
+        <h3 id="status">Vez do jogador X</h3>
+        <input id="botao" type="button" value="Reiniciar" onclick="reiniciar()">
+    </center>
+    
+    <script>
+        let jogadorAtual = 'X';
+        let tabu = ["", "", "", "", "", "", "", "", ""];
+        let gameOver = false;
+        let placarx = 0
+        let placarO = 0
+
+        function marcador(index) {
+            if (tabu[index] === "" && !gameOver) {
+                tabu[index] = jogadorAtual;  // Corrigido para atualizar o tabuleiro
+                document.getElementsByClassName("cell")[index].innerHTML = jogadorAtual;
+
+                if (checarVencedor()) {
+                    document.getElementById("status").innerHTML = "Jogador " + jogadorAtual + " venceu!";
+                    placar(jogadorAtual)
+                    gameOver = true;
+                } else {
+                    jogadorAtual = jogadorAtual === "X" ? "O" : "X";
+                    document.getElementById("status").innerText = "Vez do jogador " + jogadorAtual;
+                }
+            }
+        }
+
+        function checarVencedor() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Linhas
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Colunas
+                [0, 4, 8], [2, 4, 6]               // Diagonais
+            ];
+
+            for (let combinacao of winningCombinations) {
+                const [a, b, c] = combinacao;
+                if (tabu[a] !== "" && tabu[a] === tabu[b] && tabu[a] === tabu[c]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function reiniciar() {
+            tabu = ["", "", "", "", "", "", "", "", ""];
+            gameOver = false;
+            jogadorAtual = "X";
+            document.getElementById("status").innerText = "Vez do jogador X";
+
+            // Limpar o tabuleiro visualmente
+            var cells = document.getElementsByClassName("cell");
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].innerHTML = "";
+            }
+        }
+        function placar(vencedor){
+            if (vencedor === "X"){
+                placarx++;
+                document.getElementById("placarx").innerText = "Jogador X: "+placarx;
+
+            }
+            else if (vencedor === "O"){
+                placarO++;
+                document.getElementById("placarO").innerText = "Jogador O: "+placarO;
+            }
+        }
+    </script>
+</body>
+</html>
